@@ -86,6 +86,23 @@ client.on('message', message => {
         return;
     }
 
+    // test/debug commands
+    if (message.content.startsWith('!!!')) {
+        const args = message.content.slice(prefix.length).split(/\s+/)
+        const command = args.shift();
+        message.delete();
+
+        switch (command) {
+            // case 'command': //give list of commands
+            //     message.channel.send();
+            //     break;
+            case 'msggen':
+                client.commands.get('msggen').execute(message, args);
+                break;
+        }
+
+        return;
+    }
 
     if (!message.content.startsWith(prefix) || message.author.bot)
         return;
