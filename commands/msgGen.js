@@ -8,7 +8,8 @@ module.exports = {
                     'Follow his instructions to get verified. Remember to use the name and email you used to register for hackTAMS.\n'
                     'Not registered? No worries, can register here: https://hacktams.org/register\n\n' + 
                     'If you have any issues or questions regarding verification, please DM @Dylan';
-            message.channel.send('msg!');
+            console.log(msg);
+            message.channel.send(msg);
         }
     }
 }
