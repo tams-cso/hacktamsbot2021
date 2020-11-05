@@ -53,6 +53,7 @@ client.on('message', message => {
                         client.guilds.cache.get(servers.hackTAMS).members.cache.get(message.author.id).roles.add(roles.mentor);
                         done = true;
                         console.log('Mentor verified: ' + args[0] + ' ' + args[1] + ' ' + args[2]);
+                        message.author.send("Welcome to the hackTAMS server");
                     }
                 });
                 if (!done)
