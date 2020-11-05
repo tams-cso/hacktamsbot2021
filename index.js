@@ -4,7 +4,8 @@ const client = new Discord.Client({ ws: { intents: Discord.Intents.ALL } });
 const prefix = '!';
 const roles = {
     team: '750894547462127686',
-    hacker: '763118079918997504'
+    hacker: '763118079918997504',
+    mentor: '763118116779458590'
 };
 const servers = {
     testing: '754426418208964610',
@@ -25,10 +26,13 @@ for (const file of dmFiles) {
     const dm = require(`./directMessage/${file}`);
     client.directMessage.set(dm.name, dm);
 }
-fs.readFile('./directMessages/mentors.txt', 'utf8', function(error, data) {
-    // const lines = data.split(/\s+/);
-    if (error) throw error;
-    console.log(data);
+var mentors = [];
+fs.readFile('./directMessage/mentors.txt', 'utf8', function(error, data) {
+    const lines = data.toLowerCase().split('\n');
+    lines.forEach(function(item) {
+        mentors.push(item.split(/\s+/));
+    });
+    // console.log(mentors);
 });
 
 
@@ -39,9 +43,21 @@ client.once('ready', () => {
 client.on('message', message => {
     if (message.channel.type == 'dm' && !message.author.bot) {
         if (!message.content.startsWith(prefix)) {
-            const args = message.content.split(/\s+/);
-            if (args.length == 3 && args[2].match(/.+@.+\..+/) != -1)
-                client.directMessage.get('verify').execute(message, args, tokens);
+            const args = message.content.toLowerCase().split(/\s+/);
+            if (args.length == 3 && args[2].match(/.+@.+\..+/) != -1) {
+                var done = false;
+                mentors.forEach(function(item) {
+                    // console.log(item);
+                    // console.log(args);
+                    if (item[0] == args[0] && item[1] == args[1] && item[2] == args[2]) {
+                        client.guilds.cache.get(servers.hackTAMS).members.cache.get(message.author.id).roles.add(roles.mentor);
+                        done = true;
+                        console.log('Mentor verified: ' + args[0] + ' ' + args[1] + ' ' + args[2]);
+                    }
+                });
+                if (!done)
+                    client.directMessage.get('verify').execute(message, args, tokens);
+            }
             else if (args.length == 1 && args[0].length == 6) {
                 if (tokens.has(args[0])) {
                     client.guilds.cache.get(servers.hackTAMS).members.cache.get(tokens.get(args[0])).roles.add(roles.hacker);
