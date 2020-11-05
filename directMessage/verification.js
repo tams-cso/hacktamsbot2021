@@ -18,7 +18,6 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-
 module.exports = {
     name: 'verify',
     description: 'this is the verify command!',

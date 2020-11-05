@@ -25,6 +25,11 @@ for (const file of dmFiles) {
     const dm = require(`./directMessage/${file}`);
     client.directMessage.set(dm.name, dm);
 }
+fs.readFile('./directMessages/mentors.txt', 'utf8', function(error, data) {
+    // const lines = data.split(/\s+/);
+    if (error) throw error;
+    console.log(data);
+});
 
 
 client.once('ready', () => {
