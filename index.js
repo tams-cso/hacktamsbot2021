@@ -96,6 +96,9 @@ client.on('message', message => {
         // case 'command': //give list of commands
         //     message.channel.send();
         //     break;
+        case 'msggen':
+            client.commands.get('msggen').execute(message, args);
+            break;
         case 'ping':
             message.channel.send('pong!');
             client.commands.get('ping').execute(message, args, roles);
