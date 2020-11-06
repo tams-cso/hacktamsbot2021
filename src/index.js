@@ -12,38 +12,44 @@ const mentors = getMentors();
 
 var tokens = {}; // Object to hold auth tokens
 
-client.once('ready', () => {
-    // Log the bot login
-    console.log(`hackBot Online as ${client.user.tag}!`);
-});
+// Start bot and cron tasks
+startBot();
+cron.schedule('* * * * *', eventReminder);
 
-client.on('message', (message) => {
-    // Return if bot message
-    if (message.author.bot) return;
+/**
+ * Starts the discord bot!
+ */
+function startBot() {
+    client.once('ready', () => {
+        // Log the bot login
+        console.log(`hackBot Online as ${client.user.tag}!`);
+    });
 
-    // If the message is a dm
-    if (message.channel.type === 'dm') {
-        verificationDm(message);
-        return;
-    }
+    client.on('message', (message) => {
+        // Return if bot message
+        if (message.author.bot) return;
 
-    // Return if no prefix
-    if (!message.content.startsWith(data.prefix)) return;
+        // If the message is a dm
+        if (message.channel.type === 'dm') {
+            verificationDm(message);
+            return;
+        }
 
-    // If the message is a command (so everything else)
-    command(message);
-});
+        // Return if no prefix
+        if (!message.content.startsWith(data.prefix)) return;
 
-client.on('guildMemberAdd', (member) => {
-    // Send out a verification message asking the user for their email when they join
-    member.user.send(data.verifyMessage);
-});
+        // If the message is a command (so everything else)
+        command(message);
+    });
 
-// Login with bot token
-client.login(config.token);
+    client.on('guildMemberAdd', (member) => {
+        // Send out a verification message asking the user for their email when they join
+        member.user.send(data.verifyMessage);
+    });
 
-// Start cron task for events
-cron.schedule('* * * * *', eventReminder);;
+    // Login with bot token
+    client.login(config.token);
+}
 
 /**
  * If the bot is sent a verification dm, check if it was a
@@ -113,7 +119,7 @@ function authTokenCheck(message, args) {
 
         // Delete auth key
         delete tokens[args[0]];
-        
+
         // Send message to the user and log their join
         message.author.send('Welcome to the hackTAMS server!');
         console.log('Verified: ' + message.author.username);
