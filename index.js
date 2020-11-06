@@ -7,9 +7,6 @@ const roles = {
     hacker: '763118079918997504',
     mentor: '763118116779458590'
 };
-const channels = {
-    events: '771118672366141530'
-};
 const events = {
     1: ['Opening Ceremony','Friday','11-06','18:00','<https://hacktams.org/twitch>'],
     2: ['Team Formations','Friday','11-06','18:45','event-room Voice Channel on Discord'],
@@ -127,9 +124,6 @@ client.on('message', message => {
                     let item = events[i];
                     message.channel.send(`${item[0]}\n${item[1]} ${item[2]} ${item[3]}\nLocation: ${item[4]}`).then(message.react(':thumbsup:'));
                 }
-                // events.forEach(function(item) {
-                //     message.channel.send(`${item[0]}\n${item[1]} ${item[2]} ${item[3]}\nLocation: ${item[4]}`).then(message.react(':thumbsup:'));
-                // });
                 break;
         }
         return;
