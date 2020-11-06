@@ -17,7 +17,7 @@ const events = {
     4: ['Intro to Git + Build a Portfolio Website Workshop','Friday','11-06','21:15','<https://hacktams.org/zoom>'],
     5: ['Game Night with Hackers','Friday','11-06','22:30','event-room Voice Channel on Discord'],
     6: ['Tools & Techniques for Machine Learning Workshop','Saturday','11-07','9:00','<https://hacktams.org/zoom>'],
-    7: ['Stunned by Design - UI/UX Workshop','Saturday','11-07','10:00','<https://hacktams.org/zoom>'],
+    7: ['Stunning by Design - UI/UX Workshop','Saturday','11-07','10:00','<https://hacktams.org/zoom>'],
     8: ['Build a Clean Web App in Minutes with React - React.JS Workshop','Saturday','11-07','11:30','<https://hacktams.org/zoom>'],
     9: ['Going Deep into Deep Learning - PyTorch Workshop','Saturday','11-07','13:00','<https://hacktams.org/zoom>'],
     10: ['How to Build a Cloud-Connected AR/VR App in 15 Minutes or Less - echoAR Workshop','Saturday','11-07','14:00','<https://meet.google.com/dez-aohx-sin>'],
