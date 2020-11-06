@@ -9,7 +9,7 @@ const SERVER_ID = '750894174966120558'; // hackTAMS server ID
 const mentors = getMentors();
 const client = new Discord.Client({ ws: { intents: Discord.Intents.ALL } });
 
-var tokens = new Map(); // TODO: Change to js object
+var tokens = {} // Object to hold auth tokens
 
 // TODO: Add the generate events function
 
@@ -96,10 +96,10 @@ function verificationDm(message) {
     
     // Check if the user typed a auth token (len = 6)
     if (args.length == 1 && args[0].length == 6) {
-        if (tokens.has(args[0])) {
+        if (Object.keys(tokens).indexOf(args[0]) !== -1) {
             client.guilds.cache
                 .get(SERVER_ID)
-                .members.cache.get(tokens.get(args[0]))
+                .members.cache.get(tokens[args[0]])
                 .roles.add(data.roles.hacker);
             message.author.send('Welcome to the hackTAMS server');
             console.log('Verified: ' + message.author.username);

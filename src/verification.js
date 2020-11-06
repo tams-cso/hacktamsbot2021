@@ -22,7 +22,7 @@ const transporter = nodemailer.createTransport({
  * 
  * @param {Discord.Message} message The Discord Message object
  * @param {string[]} args Message arguments
- * @param {object} tokens List of user auth tokens 
+ * @param {{}} tokens List of user auth tokens 
  */
 module.exports = (message, args, tokens) => {
     jwt.authorize((err, res) => {
@@ -51,7 +51,7 @@ module.exports = (message, args, tokens) => {
                         ) {
                             const temp = cols[3].rowData[i].values[0].formattedValue;
                             const verCode = temp.substring(temp.length - 6);
-                            tokens.set(verCode, message.author.id);
+                            tokens["verCode"] = message.author.id;
                             // console.log(temp.substring(temp.length-6));
                             // console.log(message.author.id);
                             //send eamil
