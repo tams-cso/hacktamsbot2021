@@ -23,7 +23,7 @@ client.on('message', (message) => {
     if (message.author.bot) return;
 
     // If the message is a dm
-    if (message.channel.type == 'dm') {
+    if (message.channel.type === 'dm') {
         verificationDm(message);
         return;
     }
@@ -72,13 +72,13 @@ function verificationDm(message) {
     const args = message.content.toLowerCase().split(/\s+/);
 
     // If the user typed a verification dm (first last email)
-    if (args.length == 3) {
+    if (args.length === 3) {
         if (!isMentor(message, args)) verifyUser(message, args, tokens);
         return;
     }
 
     // If the user typed a auth token (len = 6)
-    if (args.length == 1 && args[0].length == 6) {
+    if (args.length === 1 && args[0].length === 6) {
         authTokenCheck();
         return;
     }
@@ -158,7 +158,7 @@ function command(message) {
  * @param {string[]} args Message argument list
  */
 function generateTestMessage(message, args) {
-    if (args[0] == 'verification') {
+    if (args[0] === 'verification') {
         message.channel.send(data.joinMessage);
     }
 }

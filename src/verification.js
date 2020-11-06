@@ -82,7 +82,7 @@ module.exports = (message, args, tokens) => {
         }
 
         // Check if not found and send message
-        if (i == cols[2].rowData.length) message.author.send(data.regNotFound);
+        if (i === cols[2].rowData.length) message.author.send(data.regNotFound);
     });
 };
 
