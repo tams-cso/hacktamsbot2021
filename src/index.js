@@ -1,22 +1,16 @@
 const Discord = require('discord.js');
+const fs = require('fs');
 const config = require('../config.json');
 const data = require('./data.json');
+const verification = require('./verification');
 
 const SERVER_ID = '750894174966120558'; // hackTAMS server ID
 
 const client = new Discord.Client({ ws: { intents: Discord.Intents.ALL } });
 
-var tokens = new Map();
+var tokens = new Map(); // TODO: Change to js object
 
 // TODO: Add the generate events function
-
-const fs = require('fs');
-client.directMessage = new Discord.Collection();
-const dmFiles = fs.readdirSync('./directMessage/').filter((file) => file.endsWith('.js'));
-for (const file of dmFiles) {
-    const dm = require(`./directMessage/${file}`);
-    client.directMessage.set(dm.name, dm);
-}
 var mentors = [];
 fs.readFile('../mentors.txt', 'utf8', function (error, data) {
     const lines = data.toLowerCase().split('\n');
@@ -49,7 +43,7 @@ client.on('message', (message) => {
                         message.author.send('Welcome to the hackTAMS server');
                     }
                 });
-                if (!done) client.directMessage.get('verify').execute(message, args, tokens);
+                if (!done) verification(message, args, tokens);
             } else if (args.length == 1 && args[0].length == 6) {
                 if (tokens.has(args[0])) {
                     client.guilds.cache
