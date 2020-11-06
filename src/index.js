@@ -1,6 +1,7 @@
 const Discord = require('discord.js');
 const fs = require('fs');
 const path = require('path');
+const cron = require('node-cron');
 const config = require('../config.json');
 const data = require('./data.json');
 const verifyUser = require('./verification');
@@ -10,8 +11,6 @@ const client = new Discord.Client({ ws: { intents: Discord.Intents.ALL } });
 const mentors = getMentors();
 
 var tokens = {}; // Object to hold auth tokens
-
-// TODO: Add the generate events function
 
 client.once('ready', () => {
     // Log the bot login
@@ -43,21 +42,8 @@ client.on('guildMemberAdd', (member) => {
 // Login with bot token
 client.login(config.token);
 
-/**
- * Gets a list of mentors from file
- * 
- * @returns {string[][]} the list of mentor arrays [first, last, email]
- */
-function getMentors() {
-    var tempMentors = [];
-    fs.readFile(path.join(__dirname, '..', 'mentors.txt'), 'utf8', function (error, data) {
-        const lines = data.toLowerCase().split('\n');
-        lines.forEach((item) => {
-            tempMentors.push(item.split(' '));
-        });
-    });
-    return tempMentors;
-}
+// Start cron task for events
+cron.schedule('* * * * *', eventReminder);;
 
 /**
  * If the bot is sent a verification dm, check if it was a
@@ -114,16 +100,20 @@ function isMentor(message, args) {
 /**
  * If the token valid, give them a role or
  * else send them 'token invalid' message
- * 
+ *
  * @param {Discord.Message} message The Discord Message object
  * @param {string[]} args Message argument list
  */
 function authTokenCheck(message, args) {
     if (Object.keys(tokens).indexOf(args[0]) !== -1) {
+        // Add role
         var guild = client.guilds.cache;
         var member = guild.get(SERVER_ID).members.cache.get(tokens[args[0]]);
         member.roles.add(data.roles.hacker);
 
+        // Delete auth key
+        delete tokens[args[0]];
+        
         // Send message to the user and log their join
         message.author.send('Welcome to the hackTAMS server!');
         console.log('Verified: ' + message.author.username);
@@ -152,7 +142,7 @@ function command(message) {
 
 /**
  * Command to generate a test message
- * 
+ *
  * @param {Discord.Message} message The Discord Message object
  * @param {string[]} args Message argument list
  */
@@ -160,4 +150,29 @@ function generateTestMessage(message, args) {
     if (args[0] === 'verification') {
         message.channel.send(data.joinMessage);
     }
+}
+
+/**
+ * Gets a list of mentors from file
+ *
+ * @returns {string[][]} the list of mentor arrays [first, last, email]
+ */
+function getMentors() {
+    var tempMentors = [];
+    fs.readFile(path.join(__dirname, '..', 'mentors.txt'), 'utf8', function (error, data) {
+        const lines = data.toLowerCase().split('\n');
+        lines.forEach((item) => {
+            tempMentors.push(item.split(' '));
+        });
+    });
+    return tempMentors;
+}
+
+/**
+ * Sends an event reminder if the next event starts within 45 mins
+ * Also starts a timer so it can send a reminder 15 mins before
+ */
+function eventReminder() {
+    const now = new Date();
+    const event = new Date(data.events[0].date);
 }
