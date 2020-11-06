@@ -2,6 +2,8 @@ const Discord = require('discord.js');
 const config = require('./config.json');
 const data = require('./data.json');
 
+const SERVER_ID = '750894174966120558'; // hackTAMS server ID
+
 const client = new Discord.Client({ ws: { intents: Discord.Intents.ALL } });
 
 const roles = {
@@ -10,10 +12,6 @@ const roles = {
     mentor: '763118116779458590'
 };
 
-const servers = {
-    testing: '754426418208964610',
-    hackTAMS: '750894174966120558'
-};
 var tokens = new Map();
 
 const fs = require('fs');
@@ -53,7 +51,7 @@ client.on('message', message => {
                     // console.log(item);
                     // console.log(args);
                     if (item[0] == args[0] && item[1] == args[1] && item[2] == args[2]) {
-                        client.guilds.cache.get(servers.hackTAMS).members.cache.get(message.author.id).roles.add(roles.mentor);
+                        client.guilds.cache.get(SERVER_ID).members.cache.get(message.author.id).roles.add(roles.mentor);
                         done = true;
                         console.log('Mentor verified: ' + args[0] + ' ' + args[1] + ' ' + args[2]);
                         message.author.send("Welcome to the hackTAMS server");
@@ -64,7 +62,7 @@ client.on('message', message => {
             }
             else if (args.length == 1 && args[0].length == 6) {
                 if (tokens.has(args[0])) {
-                    client.guilds.cache.get(servers.hackTAMS).members.cache.get(tokens.get(args[0])).roles.add(roles.hacker);
+                    client.guilds.cache.get(SERVER_ID).members.cache.get(tokens.get(args[0])).roles.add(roles.hacker);
                     message.author.send("Welcome to the hackTAMS server");
                     console.log('Verified: ' + message.author.username);
                 }
