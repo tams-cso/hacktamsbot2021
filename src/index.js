@@ -174,13 +174,8 @@ async function createReactionRole() {
     const eventsChannel = client.channels.cache.get(data.special.eventsChannel);
 
     // Don't add this if there are messages in the events channel
-    if (await eventsChannel.messages.fetch({ limit: 100 }).then(m => m.size) > 0) {
-        console.error("ERROR: Cannot create messages reaction role because there's already messages there >.<");
-        process.exit(1);
-    }
-    
-    // Send the message and react to it
-    const reactMessage = await eventsChannel.send(data.reactionRole);
+    const oldMessages = await eventsChannel.messages.fetch({ limit: 100 });
+    const reactMessage = oldMessages.find(m => m.content.indexOf('React to this message') !== -1);
     reactMessage.react(client.guilds.cache.get(SERVER_ID).emojis.cache.get(data.special.duckEmoji));
     
     // Create a message collector and add roles to users whenever someone reacts
