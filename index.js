@@ -10,66 +10,68 @@ var tokens = new Map();
 
 const fs = require('fs');
 client.commands = new Discord.Collection();
-const commandFiles = fs.readdirSync('./commands/').filter(file => file.endsWith('.js'));
+const commandFiles = fs.readdirSync('./commands/').filter((file) => file.endsWith('.js'));
 for (const file of commandFiles) {
     const command = require(`./commands/${file}`);
     client.commands.set(command.name, command);
 }
 client.directMessage = new Discord.Collection();
-const dmFiles = fs.readdirSync('./directMessage/').filter(file => file.endsWith('.js'));
+const dmFiles = fs.readdirSync('./directMessage/').filter((file) => file.endsWith('.js'));
 for (const file of dmFiles) {
     const dm = require(`./directMessage/${file}`);
     client.directMessage.set(dm.name, dm);
 }
 var mentors = [];
-fs.readFile('./directMessage/mentors.txt', 'utf8', function(error, data) {
+fs.readFile('./directMessage/mentors.txt', 'utf8', function (error, data) {
     const lines = data.toLowerCase().split('\n');
-    lines.forEach(function(item) {
+    lines.forEach(function (item) {
         mentors.push(item.split(/\s+/));
     });
     // console.log(mentors);
 });
 
-
 client.once('ready', () => {
     console.log('hackBot Online!');
 });
 
-client.on('message', message => {
+client.on('message', (message) => {
     if (message.channel.type == 'dm' && !message.author.bot) {
         if (!message.content.startsWith(data.prefix)) {
             const args = message.content.toLowerCase().split(/\s+/);
             if (args.length == 3 && args[2].match(/.+@.+\..+/) != -1) {
                 var done = false;
-                mentors.forEach(function(item) {
+                mentors.forEach(function (item) {
                     // console.log(item);
                     // console.log(args);
                     if (item[0] == args[0] && item[1] == args[1] && item[2] == args[2]) {
-                        client.guilds.cache.get(SERVER_ID).members.cache.get(message.author.id).roles.add(data.roles.mentor);
+                        client.guilds.cache
+                            .get(SERVER_ID)
+                            .members.cache.get(message.author.id)
+                            .roles.add(data.roles.mentor);
                         done = true;
                         console.log('Mentor verified: ' + args[0] + ' ' + args[1] + ' ' + args[2]);
-                        message.author.send("Welcome to the hackTAMS server");
+                        message.author.send('Welcome to the hackTAMS server');
                     }
                 });
-                if (!done)
-                    client.directMessage.get('verify').execute(message, args, tokens);
-            }
-            else if (args.length == 1 && args[0].length == 6) {
+                if (!done) client.directMessage.get('verify').execute(message, args, tokens);
+            } else if (args.length == 1 && args[0].length == 6) {
                 if (tokens.has(args[0])) {
-                    client.guilds.cache.get(SERVER_ID).members.cache.get(tokens.get(args[0])).roles.add(data.roles.hacker);
-                    message.author.send("Welcome to the hackTAMS server");
+                    client.guilds.cache
+                        .get(SERVER_ID)
+                        .members.cache.get(tokens.get(args[0]))
+                        .roles.add(data.roles.hacker);
+                    message.author.send('Welcome to the hackTAMS server');
                     console.log('Verified: ' + message.author.username);
-                }
-                else
-                    message.author.send("Verification Code Invalid");
-            }
-            else
-                message.author.send('To verify your server invitation, please enter \nyour first and last name and email used to register for hackTAMS.\nEx: `Hacker Duck hackerduck@hacktams.org`');
+                } else message.author.send('Verification Code Invalid');
+            } else
+                message.author.send(
+                    'To verify your server invitation, please enter \nyour first and last name and email used to register for hackTAMS.\nEx: `Hacker Duck hackerduck@hacktams.org`'
+                );
         }
         // else {
         //     const args = message.content.slice(prefix.length).split(/\s+/)
         //     const command = args.shift();
-            
+
         //     switch (command) {
         //         case 'verify':
         //             if (args.length == 1)
@@ -83,7 +85,7 @@ client.on('message', message => {
 
     // test/debug commands
     if (message.content.startsWith('---')) {
-        const args = message.content.slice(3).split(/\s+/)
+        const args = message.content.slice(3).split(/\s+/);
         const command = args.shift();
         message.delete();
 
@@ -92,21 +94,22 @@ client.on('message', message => {
             //     message.channel.send();
             //     break;
             case 'msggen':
-                client.commands.get('msggen').execute(message, args);
+                generateMessage(message, args);
                 break;
             case 'evtgen':
                 for (var i = 1; i < 19; i++) {
                     let item = data.events[i];
-                    message.channel.send(`${item[0]}\n${item[1]} ${item[2]} ${item[3]}\nLocation: ${item[4]}`).then(message.react(':thumbsup:'));
+                    message.channel
+                        .send(`${item[0]}\n${item[1]} ${item[2]} ${item[3]}\nLocation: ${item[4]}`)
+                        .then(message.react(':thumbsup:'));
                 }
                 break;
         }
         return;
     }
 
-    if (!message.content.startsWith(data.prefix) || message.author.bot)
-        return;
-    const args = message.content.slice(data.prefix.length).split(/\s+/)
+    if (!message.content.startsWith(data.prefix) || message.author.bot) return;
+    const args = message.content.slice(data.prefix.length).split(/\s+/);
     const command = args.shift();
     message.delete();
 
@@ -115,7 +118,7 @@ client.on('message', message => {
         //     message.channel.send();
         //     break;
         case 'msggen':
-            client.commands.get('msggen').execute(message, args);
+            generateMessage(message, args);
             break;
         case 'ping':
             message.channel.send('pong!');
@@ -138,15 +141,24 @@ client.on('message', message => {
             message.author.send('test message sent from bot');
             break;
     }
-    
 });
 
-client.on('guildMemberAdd', member => {
-    //send confirm message
-    member.user.send('To verify your server invitation, please enter \nyour first and last name and email used to register for hackTAMS.\nEx: `Hacker Duck hackerduck@hacktams.org`');
-
+// Send out a verification message asking the user for their email when they join
+client.on('guildMemberAdd', (member) => {
+    member.user.send(data.verifyMessage);
 });
 
-
-
+// Login with bot token
 client.login(config.token);
+
+
+/**
+ * Command to generate a join message
+ * @param {Discord.Message} message the Discord Message object
+ * @param {string[]} args argument list
+ */
+function generateMessage(message, args) {
+    if (args[0] == 'verification') {
+        message.channel.send(data.joinMessage);
+    }
+}
