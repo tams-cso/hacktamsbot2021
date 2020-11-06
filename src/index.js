@@ -1,5 +1,5 @@
 const Discord = require('discord.js');
-const config = require('./config.json');
+const config = require('../config.json');
 const data = require('./data.json');
 
 const SERVER_ID = '750894174966120558'; // hackTAMS server ID
@@ -18,7 +18,7 @@ for (const file of dmFiles) {
     client.directMessage.set(dm.name, dm);
 }
 var mentors = [];
-fs.readFile('./directMessage/mentors.txt', 'utf8', function (error, data) {
+fs.readFile('../mentors.txt', 'utf8', function (error, data) {
     const lines = data.toLowerCase().split('\n');
     lines.forEach(function (item) {
         mentors.push(item.split(/\s+/));

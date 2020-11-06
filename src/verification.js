@@ -1,5 +1,5 @@
 const { google } = require('googleapis');
-const key = require('../config.json');
+const key = require('./config.json');
 const scopes = 'https://www.googleapis.com/auth/spreadsheets';
 const jwt = new google.auth.JWT(key.client_email, null, key.private_key, scopes);
 
