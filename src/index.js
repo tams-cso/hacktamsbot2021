@@ -105,26 +105,8 @@ function command(message) {
     // Delete the original message
     message.delete();
 
-    // Do stuff depending on the command issued
-    switch (command) {
-        // TODO: Add 'help' command to list out all commands
-        case 'msggen':
-            generateMessage(message, args);
-            break;
-        case 'addTesting':
-            message.member.roles.add(data.roles.verification);
-            message.channel.send('`testing` role added');
-            break;
-        case 'removeTesting':
-            message.member.roles.remove(data.roles.verification);
-            message.channel.send('`testing` role removed');
-            break;
-        case 'clear':
-            break;
-        case 'sendtext':
-            message.author.send('test message sent from bot');
-            break;
-    }
+    // Generate a test join message
+    if (command === 'msggen') generateTestMessage(message, args); 
 }
 
 /**
@@ -153,11 +135,11 @@ function isMentor(message, args) {
 }
 
 /**
- * Command to generate a join message
+ * Command to generate a test message
  * @param {Discord.Message} message The Discord Message object
  * @param {string[]} args Message argument list
  */
-function generateMessage(message, args) {
+function generateTestMessage(message, args) {
     if (args[0] == 'verification') {
         message.channel.send(data.joinMessage);
     }
