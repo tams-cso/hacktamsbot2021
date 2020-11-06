@@ -21,36 +21,17 @@ client.on('message', (message) => {
     // Return if bot message
     if (message.author.bot) return;
 
-    // Check if the message is a dm
-    if (message.channel.type == 'dm') verificationDm(message);
-
-    if (!message.content.startsWith(data.prefix) || message.author.bot) return;
-    const args = message.content.slice(data.prefix.length).split(/\s+/);
-    const command = args.shift();
-    message.delete();
-
-    switch (command) {
-        // TODO: Add 'help' command to list out all commands
-        case 'msggen':
-            generateMessage(message, args);
-            break;
-        case 'hello':
-            message.channel.send('Hello there!');
-            break;
-        case 'addTesting':
-            message.member.roles.add(data.roles.verification);
-            message.channel.send('`testing` role added');
-            break;
-        case 'removeTesting':
-            message.member.roles.remove(data.roles.verification);
-            message.channel.send('`testing` role removed');
-            break;
-        case 'clear':
-            break;
-        case 'sendtext':
-            message.author.send('test message sent from bot');
-            break;
+    // If the message is a dm
+    if (message.channel.type == 'dm') {
+        verificationDm(message);
+        return;
     }
+
+    // Return if no prefix
+    if (!message.content.startsWith(data.prefix)) return;
+
+    // If the message is a command (so everything else)
+    command(message);
 });
 
 // Send out a verification message asking the user for their email when they join
@@ -109,6 +90,41 @@ function verificationDm(message) {
             'To verify your server invitation, please enter \nyour first and last name and email used to register for hackTAMS.\nEx: `Hacker Duck hackerduck@hacktams.org`'
         );
     return;
+}
+
+/**
+ * Runs a command, deleting the message sent
+ * 
+ * @param {Discord.Message} message The Discord Message object
+ */
+function command(message) {
+    // Split arguments and command out
+    const args = message.content.toLowerCase().slice(data.prefix.length).split(/\s+/);
+    const command = args.shift();
+
+    // Delete the original message
+    message.delete();
+
+    // Do stuff depending on the command issued
+    switch (command) {
+        // TODO: Add 'help' command to list out all commands
+        case 'msggen':
+            generateMessage(message, args);
+            break;
+        case 'addTesting':
+            message.member.roles.add(data.roles.verification);
+            message.channel.send('`testing` role added');
+            break;
+        case 'removeTesting':
+            message.member.roles.remove(data.roles.verification);
+            message.channel.send('`testing` role removed');
+            break;
+        case 'clear':
+            break;
+        case 'sendtext':
+            message.author.send('test message sent from bot');
+            break;
+    }
 }
 
 /**
