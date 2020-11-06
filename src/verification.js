@@ -57,7 +57,7 @@ module.exports = (message, args, tokens) => {
             const verCode = temp.substring(temp.length - 6);
 
             // Store that auth code
-            tokens['verCode'] = message.author.id;
+            tokens[verCode] = message.author.id;
 
             // Send the email!
             const mailOptions = {

@@ -20,7 +20,6 @@ client.once('ready', () => {
 });
 
 client.on('message', (message) => {
-    console.log(message.content)
     // Return if bot message
     if (message.author.bot) return;
 
@@ -64,7 +63,7 @@ function verificationDm(message) {
 
     // If the user typed a auth token (len = 6)
     if (args.length === 1 && args[0].length === 6) {
-        authTokenCheck();
+        authTokenCheck(message, args);
         return;
     }
 
