@@ -7,7 +7,7 @@
     },
     "special": {
         "eventsChannel": "774339202438660127",
-        "infoChannel": "774048685771980870",
+        "infoChannel": "750899860324089917",
         "duckEmoji": "774040219599110154",
         "workshopRole": "774337590870540299"
     },
@@ -15,7 +15,6 @@
     "verifyMessage": "To verify your server invitation, please enter \nyour first and last name and email used to register for hackTAMS.\nEx: `Hacker Duck hackerduck@hacktams.org`",
     "authText": "\nDM Hacker Duck with your verification code to gain access to the hackTAMS server.\n\nIf this was not you, please contact dylanli@hacktams.org",
     "regNotFound": "Registration not found: Please verify you have entered the correct name and email in the following format\nFirstName LastName Email\nEx: `Hacker Duck hackerduck@hacktams.org`",
-    "reactionRole": "React to this message to be added to the **workshop-notifs** role to recieve pings for all workshops and activities. Note that we will ping everyone for important events (such as closing ceremony).",
     "reminders": [
         {
             "time": "24:00",
@@ -39,12 +38,6 @@
         }
     ],
     "events": [
-        {
-            "name": "Nap time",
-            "date": "2020-11-06T20:50:00Z",
-            "location": "mah soft bed :DDD",
-            "pingAll": false
-        },
         {
             "name": "Opening Ceremony",
             "date": "2020-11-07T00:00:00Z",

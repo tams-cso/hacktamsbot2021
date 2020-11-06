@@ -19,6 +19,7 @@ client.once('ready', () => {
     // Start the cron task for every minute
     createReactionRole();
     cron.schedule('* * * * *', eventReminder);
+    cron.schedule('* * * * *', reminderMessages);
 });
 
 client.on('message', (message) => {
@@ -250,6 +251,24 @@ function eventPing(event) {
         .send(`${ping} **${event.name}** starting in *10 minutes* at ${event.location}`);
 
     console.log(`Sent ping for Event: ${event.name}`)
+}
+
+/**
+ * Send announcements reminding people of deadlines
+ */
+function reminderMessages() {
+    // Calculate reminder time
+    const now = new Date();
+    const rawTime = data.reminders[0].time.split(':');
+    const milliDiff = Number(rawTime[0]) * 3600000 + Number(rawTime[1]) * 60000;
+    const submissionTime = new Date('2020-11-08T21:00:00Z');
+    const diff = submissionTime - milliDiff;
+    
+    if (now.getTime() > diff) {
+        // Send message and remove from list
+        client.channels.cache.get(data.special.infoChannel).send(`@everyone ${data.reminders[0].msg}`);
+        data.reminders.shift();
+    }
 }
 
 /**
