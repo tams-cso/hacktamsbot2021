@@ -171,7 +171,7 @@ function getMentors() {
  * Sends an event reminder if the next event starts within 45 mins
  * Also starts a timer so it can send a reminder 15 mins before
  */
-function eventReminder() {
+async function eventReminder() {
     // Get current time and parse first event time
     const now = new Date();
     const eventDate = new Date(data.events[0].date);
@@ -180,7 +180,7 @@ function eventReminder() {
     const diff = eventDate.getTime() - now.getTime();
     if (diff < 2700000) {
         // Send embed message
-        sendEventMessage(data.events[0]);
+        await sendEventMessage(data.events[0]);
 
         // Set interval to send reminder message 10 mins before (35 mins = 2,100,000 ms)
         var tempEvent = data.events[0];
@@ -197,13 +197,20 @@ function eventReminder() {
  *
  * @param {Event} event The event object
  */
-function sendEventMessage(event) {
+async function sendEventMessage(event) {
+    // Get the time in UTC-6 time
+    var d = (new Date(Number((new Date(event.date)).getTime() - 21600000))); // UTC-6 [not good lmao]
+    var timeString = `${d.getMonth() + 1}/${d.getDate()} @ ${d.getHours()}:${d.getMinutes()}`;
+
+    // Create and send embed, then react to it with quack
     const embed = new Discord.MessageEmbed()
         .setColor('#49e7fc')
         .setTitle(event.name)
+        .addField('Time', timeString)
         .addField('Location', event.location)
         .setThumbnail('https://api.michaelzhao.xyz/images/hacktams.png');
-    client.channels.cache.get(data.channels.events).send(embed);
+    const sentMessage = await client.channels.cache.get(data.special.eventsChannel).send(embed);
+    sentMessage.react(client.guilds.cache.get(SERVER_ID).emojis.cache.get(data.special.duckEmoji));
     
     console.log(`Sent reminder for Event: ${event.name}`)
 }
@@ -217,7 +224,7 @@ function eventPing(event) {
     if (event.pingAll) ping = '@everyone';
 
     client.channels.cache
-        .get(data.channels.events)
+        .get(data.special.eventsChannel)
         .send(`${ping} **${event.name}** starting in *10 minutes* at ${event.location}`);
 
     console.log(`Sent ping for Event: ${event.name}`)

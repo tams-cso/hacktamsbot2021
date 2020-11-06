@@ -5,8 +5,9 @@
         "hacker": "763118079918997504",
         "mentor": "763118116779458590"
     },
-    "channels": {
-        "events": "771118672366141530"
+    "special": {
+        "eventsChannel": "771118672366141530",
+        "duckEmoji": "774040219599110154"
     },
     "joinMessage": "Welcome to hackTAMS! This server will be the main source of communication and information.\nFirst you must verify invitation. You should have received a DM from Hacker Duck. Follow his instructions to get verified. Remember to use the name and email you used to register for hackTAMS.\nNot registered? No worries, can register here: https://hacktams.org/register\n\nIf you have any issues or questions regarding verification, please DM <@611762884464082945>",
     "verifyMessage": "To verify your server invitation, please enter \nyour first and last name and email used to register for hackTAMS.\nEx: `Hacker Duck hackerduck@hacktams.org`",
