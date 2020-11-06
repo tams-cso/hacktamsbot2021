@@ -1,5 +1,10 @@
 {
     "prefix": "!",
+    "roles": {
+        "team": "750894547462127686",
+        "hacker": "763118079918997504",
+        "mentor": "763118116779458590"
+    },
     "events": [
         {
             "name": "Opening Ceremony",

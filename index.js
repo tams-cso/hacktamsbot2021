@@ -6,12 +6,6 @@ const SERVER_ID = '750894174966120558'; // hackTAMS server ID
 
 const client = new Discord.Client({ ws: { intents: Discord.Intents.ALL } });
 
-const roles = {
-    team: '750894547462127686',
-    hacker: '763118079918997504',
-    mentor: '763118116779458590'
-};
-
 var tokens = new Map();
 
 const fs = require('fs');
@@ -51,7 +45,7 @@ client.on('message', message => {
                     // console.log(item);
                     // console.log(args);
                     if (item[0] == args[0] && item[1] == args[1] && item[2] == args[2]) {
-                        client.guilds.cache.get(SERVER_ID).members.cache.get(message.author.id).roles.add(roles.mentor);
+                        client.guilds.cache.get(SERVER_ID).members.cache.get(message.author.id).roles.add(data.roles.mentor);
                         done = true;
                         console.log('Mentor verified: ' + args[0] + ' ' + args[1] + ' ' + args[2]);
                         message.author.send("Welcome to the hackTAMS server");
@@ -62,7 +56,7 @@ client.on('message', message => {
             }
             else if (args.length == 1 && args[0].length == 6) {
                 if (tokens.has(args[0])) {
-                    client.guilds.cache.get(SERVER_ID).members.cache.get(tokens.get(args[0])).roles.add(roles.hacker);
+                    client.guilds.cache.get(SERVER_ID).members.cache.get(tokens.get(args[0])).roles.add(data.roles.hacker);
                     message.author.send("Welcome to the hackTAMS server");
                     console.log('Verified: ' + message.author.username);
                 }
@@ -125,17 +119,17 @@ client.on('message', message => {
             break;
         case 'ping':
             message.channel.send('pong!');
-            client.commands.get('ping').execute(message, args, roles);
+            client.commands.get('ping').execute(message, args, data.roles);
             break;
         case 'hello':
             message.channel.send('Hello there!');
             break;
         case 'addTesting':
-            message.member.roles.add(roles.verification);
+            message.member.roles.add(data.roles.verification);
             message.channel.send('`testing` role added');
             break;
         case 'removeTesting':
-            message.member.roles.remove(roles.verification);
+            message.member.roles.remove(data.roles.verification);
             message.channel.send('`testing` role removed');
             break;
         case 'clear':
