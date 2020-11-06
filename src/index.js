@@ -6,14 +6,15 @@ const data = require('./data.json');
 const verifyUser = require('./verification');
 
 const SERVER_ID = '750894174966120558'; // hackTAMS server ID
-const mentors = getMentors();
 const client = new Discord.Client({ ws: { intents: Discord.Intents.ALL } });
+const mentors = getMentors();
 
 var tokens = {}; // Object to hold auth tokens
 
 // TODO: Add the generate events function
 
 client.once('ready', () => {
+    // Log the bot login
     console.log(`hackBot Online as ${client.user.tag}!`);
 });
 
@@ -34,8 +35,8 @@ client.on('message', (message) => {
     command(message);
 });
 
-// Send out a verification message asking the user for their email when they join
 client.on('guildMemberAdd', (member) => {
+    // Send out a verification message asking the user for their email when they join
     member.user.send(data.verifyMessage);
 });
 
@@ -43,7 +44,8 @@ client.on('guildMemberAdd', (member) => {
 client.login(config.token);
 
 /**
- * Gets a list of mentors
+ * Gets a list of mentors from file
+ * 
  * @returns {string[][]} the list of mentor arrays [first, last, email]
  */
 function getMentors() {
@@ -86,8 +88,34 @@ function verificationDm(message) {
 }
 
 /**
- * If the token valid, give them a role or 
+ * Checks to see if the user is a mentor.
+ * If true, it sends a message to the mentor that they're verified
+ * and adds the mentor role to them.
+ *
+ * @param {Discord.Message} message The Discord Message object
+ * @param {string[]} args Message argument list
+ * @returns {boolean} If the argument list matches a mentor's
+ */
+function isMentor(message, args) {
+    // Iterate through the list of mentors
+    mentors.forEach((item) => {
+        // Check to see if each argument is the same as the mentor list item
+        if (JSON.stringify(item) === JSON.stringify(args)) {
+            var guild = client.guilds.cache.get(SERVER_ID);
+            var member = guild.members.cache.get(message.author.id);
+            member.roles.add(data.roles.mentor);
+            console.log('Mentor verified: ' + args[0] + ' ' + args[1] + ' ' + args[2]);
+            message.author.send('Welcome to the hackTAMS server');
+            return true;
+        }
+    });
+    return false;
+}
+
+/**
+ * If the token valid, give them a role or
  * else send them 'token invalid' message
+ * 
  * @param {Discord.Message} message The Discord Message object
  * @param {string[]} args Message argument list
  */
@@ -124,32 +152,8 @@ function command(message) {
 }
 
 /**
- * Checks to see if the user is a mentor.
- * If true, it sends a message to the mentor that they're verified
- * and adds the mentor role to them.
- *
- * @param {Discord.Message} message The Discord Message object
- * @param {string[]} args Message argument list
- * @returns {boolean} If the argument list matches a mentor's
- */
-function isMentor(message, args) {
-    // Iterate through the list of mentors
-    mentors.forEach((item) => {
-        // Check to see if each argument is the same as the mentor list item
-        if (JSON.stringify(item) === JSON.stringify(args)) {
-            var guild = client.guilds.cache.get(SERVER_ID);
-            var member = guild.members.cache.get(message.author.id);
-            member.roles.add(data.roles.mentor);
-            console.log('Mentor verified: ' + args[0] + ' ' + args[1] + ' ' + args[2]);
-            message.author.send('Welcome to the hackTAMS server');
-            return true;
-        }
-    });
-    return false;
-}
-
-/**
  * Command to generate a test message
+ * 
  * @param {Discord.Message} message The Discord Message object
  * @param {string[]} args Message argument list
  */
