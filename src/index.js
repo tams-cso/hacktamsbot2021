@@ -52,7 +52,6 @@ function getMentors() {
     var tempMentors = [];
     fs.readFile(path.join(__dirname, '..', 'mentors.txt'), 'utf8', function (error, data) {
         const lines = data.toLowerCase().split('\n');
-        console.log(lines);
         lines.forEach((item) => {
             tempMentors.push(item.split(' '));
         });
