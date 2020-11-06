@@ -17,6 +17,7 @@ client.once('ready', () => {
     console.log(`hackBot Online as ${client.user.tag}!`);
     
     // Start the cron task for every minute
+    createReactionRole();
     cron.schedule('* * * * *', eventReminder);
 });
 
@@ -168,6 +169,30 @@ function getMentors() {
     return tempMentors;
 }
 
+async function createReactionRole() {
+    // Get the events channel
+    const eventsChannel = client.channels.cache.get(data.special.eventsChannel);
+
+    // Don't add this if there are messages in the events channel
+    if (await eventsChannel.messages.fetch({ limit: 100 }).then(m => m.size) > 0) {
+        console.error("ERROR: Cannot create messages reaction role because there's already messages there >.<");
+        process.exit(1);
+    }
+    
+    // Send the message and react to it
+    const reactMessage = await eventsChannel.send(data.reactionRole);
+    reactMessage.react(client.guilds.cache.get(SERVER_ID).emojis.cache.get(data.special.duckEmoji));
+    
+    // Create a message collector and add roles to users whenever someone reacts
+    const collector = reactMessage.createReactionCollector(() => {return true;});
+    collector.on('collect', (r) => {
+        r.users.cache.forEach((user) => {
+            const guild = client.guilds.cache.get(SERVER_ID);
+            guild.members.cache.get(user.id).roles.add(data.special.workshopRole);
+        });
+    });
+}
+
 /**
  * Sends an event reminder if the next event starts within 45 mins
  * Also starts a timer so it can send a reminder 15 mins before
@@ -202,17 +227,16 @@ async function eventReminder() {
 async function sendEventMessage(event) {
     // Get the time in UTC-6 time
     var d = (new Date(Number((new Date(event.date)).getTime() - 21600000))); // UTC-6 [not good lmao]
-    var timeString = `${d.getMonth() + 1}/${d.getDate()} @ ${d.getHours()}:${d.getMinutes()}`;
+    var timeString = `11/${d.getDate()}/20 @ ${d.getHours()}:${d.getMinutes()} CST (UTC-6:00)`;
 
     // Create and send embed, then react to it with quack
     const embed = new Discord.MessageEmbed()
-        .setColor('#49e7fc')
+        .setColor('#65cdf1')
         .setTitle(event.name)
         .addField('Time', timeString)
         .addField('Location', event.location)
         .setThumbnail('https://api.michaelzhao.xyz/images/hacktams.png');
-    const sentMessage = await client.channels.cache.get(data.special.eventsChannel).send(embed);
-    sentMessage.react(client.guilds.cache.get(SERVER_ID).emojis.cache.get(data.special.duckEmoji));
+    client.channels.cache.get(data.special.eventsChannel).send(embed);
     
     console.log(`Sent reminder for Event: ${event.name}`)
 }
@@ -223,7 +247,7 @@ async function sendEventMessage(event) {
  * @param {Event} event The event object
  */
 function eventPing(event) {
-    var ping = '@here';
+    var ping = `<@&${data.special.workshopRole}>`;
     if (event.pingAll) ping = '@everyone';
 
     client.channels.cache
