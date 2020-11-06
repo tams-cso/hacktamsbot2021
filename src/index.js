@@ -1,5 +1,6 @@
 const Discord = require('discord.js');
 const fs = require('fs');
+const path = require('path');
 const config = require('../config.json');
 const data = require('./data.json');
 const verification = require('./verification');
@@ -11,17 +12,10 @@ const client = new Discord.Client({ ws: { intents: Discord.Intents.ALL } });
 var tokens = new Map(); // TODO: Change to js object
 
 // TODO: Add the generate events function
-var mentors = [];
-fs.readFile('../mentors.txt', 'utf8', function (error, data) {
-    const lines = data.toLowerCase().split('\n');
-    lines.forEach(function (item) {
-        mentors.push(item.split(/\s+/));
-    });
-    // console.log(mentors);
-});
+const mentors = getMentors();
 
 client.once('ready', () => {
-    console.log('hackBot Online!');
+    console.log(`hackBot Online as ${client.user.tag}!`);
 });
 
 client.on('message', (message) => {
@@ -98,6 +92,21 @@ client.on('guildMemberAdd', (member) => {
 // Login with bot token
 client.login(config.token);
 
+/**
+ * Gets a list of mentors
+ * @returns {string[][]} the list of mentor arrays [first, last, email]
+ */
+function getMentors() {
+    var tempMentors = [];
+    fs.readFile(path.join(__dirname, '..', 'mentors.txt'), 'utf8', function (error, data) {
+        const lines = data.toLowerCase().split('\n');
+        console.log(lines);
+        lines.forEach((item) => {
+            tempMentors.push(item.split(" "));
+        });
+    });
+    return tempMentors;
+}
 
 /**
  * Command to generate a join message

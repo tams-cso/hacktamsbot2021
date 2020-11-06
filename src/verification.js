@@ -1,7 +1,7 @@
 const { google } = require('googleapis');
 const nodemailer = require('nodemailer');
 const Discord = require('discord.js');
-const keys = require('./config.json');
+const keys = require('../config.json');
 
 const SCOPES = 'https://www.googleapis.com/auth/spreadsheets';
 
