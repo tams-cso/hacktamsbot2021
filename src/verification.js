@@ -45,15 +45,15 @@ module.exports = (message, args, tokens) => {
         for (var i = 0; i < cols[2].rowData.length; i++) {
             // Continue if invalid first name, last name, or email
             if (
-                cellValue(cols, i, 0).toLowerCase() !== args[0].toLowerCase() ||
-                cellValue(cols, i, 1).toLowerCase() !== args[1].toLowerCase() ||
-                cellValue(cols, i, 2).toLowerCase() !== args[2].toLowerCase()
+                getCellValue(cols, i, 0).toLowerCase() !== args[0].toLowerCase() ||
+                getCellValue(cols, i, 1).toLowerCase() !== args[1].toLowerCase() ||
+                getCellValue(cols, i, 2).toLowerCase() !== args[2].toLowerCase()
             ) {
                 continue;
             }
 
             // Extract last 6-characters as auth string
-            const temp = cellValue(cols, i, 3);
+            const temp = getCellValue(cols, i, 3);
             const verCode = temp.substring(temp.length - 6);
 
             // Store that auth code
@@ -93,4 +93,4 @@ module.exports = (message, args, tokens) => {
  * @param {number} col Column number
  * @returns {string} The cell value, as a string
  */
-const cellValue = (cols, row, col) => cols[col].rowData[row].values[0].formattedValue;
+const getCellValue = (cols, row, col) => cols[col].rowData[row].values[0].formattedValue;

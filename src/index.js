@@ -13,9 +13,10 @@ const mentors = getMentors();
 var tokens = {}; // Object to hold auth tokens
 
 client.once('ready', () => {
-    // Log the bot login
+    // Log the bot in
     console.log(`hackBot Online as ${client.user.tag}!`);
-    eventReminder();
+    
+    // Start the cron task for every minute
     cron.schedule('* * * * *', eventReminder);
 });
 
@@ -194,7 +195,8 @@ async function eventReminder() {
 }
 
 /**
- *
+ * Sends an embed message with the event in it
+ * 
  * @param {Event} event The event object
  */
 async function sendEventMessage(event) {
@@ -216,7 +218,8 @@ async function sendEventMessage(event) {
 }
 
 /**
- *
+ * Pings here or everyone that the event starts in 10 minutes
+ * 
  * @param {Event} event The event object
  */
 function eventPing(event) {
