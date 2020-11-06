@@ -12,44 +12,38 @@ const mentors = getMentors();
 
 var tokens = {}; // Object to hold auth tokens
 
-// Start bot and cron tasks
-startBot();
-cron.schedule('* * * * *', eventReminder);
+client.once('ready', () => {
+    // Log the bot login
+    console.log(`hackBot Online as ${client.user.tag}!`);
+    eventReminder();
+    cron.schedule('* * * * *', eventReminder);
+});
 
-/**
- * Starts the discord bot!
- */
-function startBot() {
-    client.once('ready', () => {
-        // Log the bot login
-        console.log(`hackBot Online as ${client.user.tag}!`);
-    });
+client.on('message', (message) => {
+    console.log(message.content)
+    // Return if bot message
+    if (message.author.bot) return;
 
-    client.on('message', (message) => {
-        // Return if bot message
-        if (message.author.bot) return;
+    // If the message is a dm
+    if (message.channel.type === 'dm') {
+        verificationDm(message);
+        return;
+    }
 
-        // If the message is a dm
-        if (message.channel.type === 'dm') {
-            verificationDm(message);
-            return;
-        }
+    // Return if no prefix
+    if (!message.content.startsWith(data.prefix)) return;
 
-        // Return if no prefix
-        if (!message.content.startsWith(data.prefix)) return;
+    // If the message is a command (so everything else)
+    command(message);
+});
 
-        // If the message is a command (so everything else)
-        command(message);
-    });
+client.on('guildMemberAdd', (member) => {
+    // Send out a verification message asking the user for their email when they join
+    member.user.send(data.verifyMessage);
+});
 
-    client.on('guildMemberAdd', (member) => {
-        // Send out a verification message asking the user for their email when they join
-        member.user.send(data.verifyMessage);
-    });
-
-    // Login with bot token
-    client.login(config.token);
-}
+// Login with bot token
+client.login(config.token);
 
 /**
  * If the bot is sent a verification dm, check if it was a
@@ -179,6 +173,61 @@ function getMentors() {
  * Also starts a timer so it can send a reminder 15 mins before
  */
 function eventReminder() {
+    // Get current time and parse first event time
     const now = new Date();
-    const event = new Date(data.events[0].date);
+    const eventDate = new Date(data.events[0].date);
+
+    // Check if the difference is less than 45 mins (2,700,000 milliseconds)
+    const diff = eventDate.getTime() - now.getTime();
+    if (diff < 2700000) {
+        // Send embed message
+        sendEventMessage(data.events[0]);
+
+        // Set interval to send reminder message 10 mins before (35 mins = 2,100,000 ms)
+        var tempEvent = data.events[0];
+        setTimeout(() => {
+            eventPing(tempEvent);
+        }, 2100000);
+
+        // Delete the event from list
+        data.events.shift();
+    }
 }
+
+/**
+ *
+ * @param {Event} event The event object
+ */
+function sendEventMessage(event) {
+    const embed = new Discord.MessageEmbed()
+        .setColor('#49e7fc')
+        .setTitle(event.name)
+        .addField('Location', event.location)
+        .setThumbnail('https://api.michaelzhao.xyz/images/hacktams.png');
+    client.channels.cache.get(data.channels.events).send(embed);
+    
+    console.log(`Sent reminder for Event: ${event.name}`)
+}
+
+/**
+ *
+ * @param {Event} event The event object
+ */
+function eventPing(event) {
+    var ping = '@here';
+    if (event.pingAll) ping = '@everyone';
+
+    client.channels.cache
+        .get(data.channels.events)
+        .send(`${ping} **${event.name}** starting in *10 minutes* at ${event.location}`);
+
+    console.log(`Sent ping for Event: ${event.name}`)
+}
+
+/**
+ * @typedef Event
+ * @property {string} name Name of the event
+ * @property {string} date ISO datetime string
+ * @property {string} location Link or location of event
+ * @property {boolean} pingAll Should we ping everyone or just here
+ */
