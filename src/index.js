@@ -9,7 +9,7 @@ const SERVER_ID = '750894174966120558'; // hackTAMS server ID
 const mentors = getMentors();
 const client = new Discord.Client({ ws: { intents: Discord.Intents.ALL } });
 
-var tokens = {} // Object to hold auth tokens
+var tokens = {}; // Object to hold auth tokens
 
 // TODO: Add the generate events function
 
@@ -62,39 +62,53 @@ function getMentors() {
  * If the bot is sent a verification dm, check if it was a
  * (first last email) tuple or a verification code and verify
  * the user, adding a role when they're verified.
- * 
+ *
  * @param {Discord.Message} message The Discord Message object
  */
 function verificationDm(message) {
     // Split arguments out
     const args = message.content.toLowerCase().split(/\s+/);
 
-    // Check if the user typed a verification dm (first last email)
+    // If the user typed a verification dm (first last email)
     if (args.length == 3) {
-        if (isMentor(message, args)) verifyUser(message, args, tokens);
+        if (!isMentor(message, args)) verifyUser(message, args, tokens);
         return;
     }
-    
-    // Check if the user typed a auth token (len = 6)
+
+    // If the user typed a auth token (len = 6)
     if (args.length == 1 && args[0].length == 6) {
-        if (Object.keys(tokens).indexOf(args[0]) !== -1) {
-            client.guilds.cache
-                .get(SERVER_ID)
-                .members.cache.get(tokens[args[0]])
-                .roles.add(data.roles.hacker);
-            message.author.send('Welcome to the hackTAMS server');
-            console.log('Verified: ' + message.author.username);
-        } else message.author.send('Verification Code Invalid');
-    } else
-        message.author.send(
-            'To verify your server invitation, please enter \nyour first and last name and email used to register for hackTAMS.\nEx: `Hacker Duck hackerduck@hacktams.org`'
-        );
-    return;
+        authTokenCheck();
+        return;
+    }
+
+    // They sent something else lmao
+    message.author.send(data.verifyMessage);
+}
+
+/**
+ * If the token valid, give them a role or 
+ * else send them 'token invalid' message
+ * @param {Discord.Message} message The Discord Message object
+ * @param {string[]} args Message argument list
+ */
+function authTokenCheck(message, args) {
+    if (Object.keys(tokens).indexOf(args[0]) !== -1) {
+        var guild = client.guilds.cache;
+        var member = guild.get(SERVER_ID).members.cache.get(tokens[args[0]]);
+        member.roles.add(data.roles.hacker);
+
+        // Send message to the user and log their join
+        message.author.send('Welcome to the hackTAMS server!');
+        console.log('Verified: ' + message.author.username);
+        return;
+    }
+    // Invalid code message
+    message.author.send('Verification Code Invalid');
 }
 
 /**
  * Runs a command, deleting the message sent
- * 
+ *
  * @param {Discord.Message} message The Discord Message object
  */
 function command(message) {
@@ -106,7 +120,7 @@ function command(message) {
     message.delete();
 
     // Generate a test join message
-    if (command === 'msggen') generateTestMessage(message, args); 
+    if (command === 'msggen') generateTestMessage(message, args);
 }
 
 /**
