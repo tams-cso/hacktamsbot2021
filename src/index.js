@@ -10,6 +10,11 @@ const SERVER_ID = '750894174966120558'; // hackTAMS server ID
 const client = new Discord.Client({ ws: { intents: Discord.Intents.ALL } });
 const mentors = getMentors();
 
+// Counters for event and reminder lists
+var eventCount = 2; // hacky fix for production errors IRGHIUERWHGBIUREWHGURWEHG - MUST CHANGE AFTER RESTART DURING EVENT
+var reminderCount = 0;
+var toPingList = [];
+
 var tokens = {}; // Object to hold auth tokens
 
 client.once('ready', () => {
@@ -193,22 +198,28 @@ async function createReactionRole() {
 async function eventReminder() {
     // Get current time and parse first event time
     const now = new Date();
-    const eventDate = new Date(data.events[0].date);
+    const eventDate = new Date(data.events[eventCount].date);
 
     // Check if the difference is less than 45 mins (2,700,000 milliseconds)
     const diff = eventDate.getTime() - now.getTime();
     if (diff < 2700000) {
         // Send embed message
-        await sendEventMessage(data.events[0]);
+        await sendEventMessage(data.events[eventCount]);
 
-        // Set interval to send reminder message 10 mins before (35 mins = 2,100,000 ms)
-        var tempEvent = data.events[0];
-        setTimeout(() => {
-            eventPing(tempEvent);
-        }, 2100000);
+        // Add event to ping list
+        toPingList.push(eventCount);
+        
+        eventCount++;
+    }
 
-        // Delete the event from list
-        data.events.shift();
+    // Check for ping events
+    const pingDate = new Date(data.events[toPingList[0]].date);
+
+    const diff2 = pingDate.getTime() - now.getTime();
+    if (diff2 < 600000) {
+        // Send ping
+        await eventPing(data.events[toPingList[0]]);
+        toPingList.shift();
     }
 }
 
@@ -239,11 +250,11 @@ async function sendEventMessage(event) {
  * 
  * @param {Event} event The event object
  */
-function eventPing(event) {
+async function eventPing(event) {
     var ping = `<@&${data.special.workshopRole}>`;
     if (event.pingAll) ping = '@everyone';
 
-    client.channels.cache
+    await client.channels.cache
         .get(data.special.eventsChannel)
         .send(`${ping} **${event.name}** starting in *10 minutes* at ${event.location}`);
 
@@ -263,9 +274,14 @@ function reminderMessages() {
     
     if (now.getTime() > diff) {
         // Send message and remove from list
-        client.channels.cache.get(data.special.infoChannel).send(`@everyone ${data.reminders[0].msg}`);
-        data.reminders.shift();
+        client.channels.cache.get(data.special.infoChannel).send(`@everyone ${data.reminders[reminderCount].msg}`);
+        reminderCount++;
     }
+}
+
+function pad(str) {
+	if (str.length === 1) return '0' + str;
+	return str;
 }
 
 /**
@@ -275,8 +291,3 @@ function reminderMessages() {
  * @property {string} location Link or location of event
  * @property {boolean} pingAll Should we ping everyone or just here
  */
-
-function pad(str) {
-	if (str.length === 1) return '0' + str;
-	return str;
-}
