@@ -212,6 +212,7 @@ async function eventReminder() {
         eventCount++;
     }
 
+    if (toPingList.length === 0) return;
     // Check for ping events
     const pingDate = new Date(data.events[toPingList[0]].date);
 
