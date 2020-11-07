@@ -7,13 +7,37 @@
         "notif": "774337590870540299"
     },
     "special": {
-        "eventsChannel": "771118672366141530",
-        "duckEmoji": "774040219599110154"
+        "eventsChannel": "774339202438660127",
+        "infoChannel": "750899860324089917",
+        "duckEmoji": "774040219599110154",
+        "workshopRole": "774337590870540299"
     },
     "joinMessage": "Welcome to hackTAMS! This server will be the main source of communication and information.\nFirst you must verify invitation. You should have received a DM from Hacker Duck. Follow his instructions to get verified. Remember to use the name and email you used to register for hackTAMS.\nNot registered? No worries, can register here: https://hacktams.org/register\n\nIf you have any issues or questions regarding verification, please DM <@611762884464082945>",
     "verifyMessage": "To verify your server invitation, please enter \nyour first and last name and email used to register for hackTAMS.\nEx: `Hacker Duck hackerduck@hacktams.org`",
     "authText": "\nDM Hacker Duck with your verification code to gain access to the hackTAMS server.\n\nIf this was not you, please contact dylanli@hacktams.org",
     "regNotFound": "Registration not found: Please verify you have entered the correct name and email in the following format\nFirstName LastName Email\nEx: `Hacker Duck hackerduck@hacktams.org`",
+    "reminders": [
+        {
+            "time": "24:00",
+            "msg": "You have exactly **24 hours left** to finish your projects. Hope your projects are going well, and feel free to talk to any team member or mentor if you have questions!"
+        },
+        {
+            "time": "12:00",
+            "msg": "Just a courtesy reminder that you now have only **12 hours remaining** of hacking or designing. We're excited to see your amazing creations!"
+        },
+        {
+            "time": "2:00",
+            "msg": "**2 hours remaining** until the submission deadline!! We recommend you start creating your post on Devpost now!"
+        },
+        {
+            "time": "1:00",
+            "msg": "**1 HOUR REMAINING** until the deadline!!! You should at least have a draft on devpost by this point. We also suggest you start creating your presentation videos at this point if you haven't yet."
+        },
+        {
+            "time": "0:10",
+            "msg": "**TEN MIUNTES UNTIL ALL PROJECTS ARE DUE!!!!** Get your projects in NOW gogogogo!!!"
+        }
+    ],
     "events": [
         {
             "name": "Opening Ceremony",

@@ -17,7 +17,9 @@ client.once('ready', () => {
     console.log(`hackBot Online as ${client.user.tag}!`);
     
     // Start the cron task for every minute
+    createReactionRole();
     cron.schedule('* * * * *', eventReminder);
+    cron.schedule('* * * * *', reminderMessages);
 });
 
 client.on('message', (message) => {
@@ -111,9 +113,6 @@ function authTokenCheck(message, args) {
         var member = guild.get(SERVER_ID).members.cache.get(tokens[args[0]]);
         member.roles.add(data.roles.hacker);
 
-        // Delete auth key
-        delete tokens[args[0]];
-
         // Send message to the user and log their join
         message.author.send('Welcome to the hackTAMS server!');
         console.log('Verified: ' + message.author.username);
@@ -168,6 +167,25 @@ function getMentors() {
     return tempMentors;
 }
 
+async function createReactionRole() {
+    // Get the events channel
+    const eventsChannel = client.channels.cache.get(data.special.eventsChannel);
+
+    // Don't add this if there are messages in the events channel
+    const oldMessages = await eventsChannel.messages.fetch({ limit: 100 });
+    const reactMessage = oldMessages.find(m => m.content.indexOf('React to this message') !== -1);
+    reactMessage.react(client.guilds.cache.get(SERVER_ID).emojis.cache.get(data.special.duckEmoji));
+    
+    // Create a message collector and add roles to users whenever someone reacts
+    const collector = reactMessage.createReactionCollector(() => {return true;});
+    collector.on('collect', (r) => {
+        r.users.cache.forEach((user) => {
+            const guild = client.guilds.cache.get(SERVER_ID);
+            guild.members.cache.get(user.id).roles.add(data.special.workshopRole);
+        });
+    });
+}
+
 /**
  * Sends an event reminder if the next event starts within 45 mins
  * Also starts a timer so it can send a reminder 15 mins before
@@ -202,17 +220,16 @@ async function eventReminder() {
 async function sendEventMessage(event) {
     // Get the time in UTC-6 time
     var d = (new Date(Number((new Date(event.date)).getTime() - 21600000))); // UTC-6 [not good lmao]
-    var timeString = `${d.getMonth() + 1}/${d.getDate()} @ ${d.getHours()}:${d.getMinutes()}`;
+    var timeString = `11/${d.getDate()}/20 @ ${pad(d.getHours().toString())}:${pad(d.getMinutes().toString())} CST (UTC-6:00)`;
 
     // Create and send embed, then react to it with quack
     const embed = new Discord.MessageEmbed()
-        .setColor('#49e7fc')
+        .setColor('#65cdf1')
         .setTitle(event.name)
         .addField('Time', timeString)
         .addField('Location', event.location)
         .setThumbnail('https://api.michaelzhao.xyz/images/hacktams.png');
-    const sentMessage = await client.channels.cache.get(data.special.eventsChannel).send(embed);
-    sentMessage.react(client.guilds.cache.get(SERVER_ID).emojis.cache.get(data.special.duckEmoji));
+    client.channels.cache.get(data.special.eventsChannel).send(embed);
     
     console.log(`Sent reminder for Event: ${event.name}`)
 }
@@ -223,7 +240,7 @@ async function sendEventMessage(event) {
  * @param {Event} event The event object
  */
 function eventPing(event) {
-    var ping = '@here';
+    var ping = `<@&${data.special.workshopRole}>`;
     if (event.pingAll) ping = '@everyone';
 
     client.channels.cache
@@ -234,9 +251,32 @@ function eventPing(event) {
 }
 
 /**
+ * Send announcements reminding people of deadlines
+ */
+function reminderMessages() {
+    // Calculate reminder time
+    const now = new Date();
+    const rawTime = data.reminders[0].time.split(':');
+    const milliDiff = Number(rawTime[0]) * 3600000 + Number(rawTime[1]) * 60000;
+    const submissionTime = new Date('2020-11-08T21:00:00Z');
+    const diff = submissionTime - milliDiff;
+    
+    if (now.getTime() > diff) {
+        // Send message and remove from list
+        client.channels.cache.get(data.special.infoChannel).send(`@everyone ${data.reminders[0].msg}`);
+        data.reminders.shift();
+    }
+}
+
+/**
  * @typedef Event
  * @property {string} name Name of the event
  * @property {string} date ISO datetime string
  * @property {string} location Link or location of event
  * @property {boolean} pingAll Should we ping everyone or just here
  */
+
+function pad(str) {
+	if (str.length === 1) return '0' + str;
+	return str;
+}
