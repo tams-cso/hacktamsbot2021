@@ -113,9 +113,6 @@ function authTokenCheck(message, args) {
         var member = guild.get(SERVER_ID).members.cache.get(tokens[args[0]]);
         member.roles.add(data.roles.hacker);
 
-        // Delete auth key
-        delete tokens[args[0]];
-
         // Send message to the user and log their join
         message.author.send('Welcome to the hackTAMS server!');
         console.log('Verified: ' + message.author.username);
@@ -223,7 +220,7 @@ async function eventReminder() {
 async function sendEventMessage(event) {
     // Get the time in UTC-6 time
     var d = (new Date(Number((new Date(event.date)).getTime() - 21600000))); // UTC-6 [not good lmao]
-    var timeString = `11/${d.getDate()}/20 @ ${d.getHours()}:${d.getMinutes()} CST (UTC-6:00)`;
+    var timeString = `11/${d.getDate()}/20 @ ${pad(d.getHours().toString())}:${pad(d.getMinutes().toString())} CST (UTC-6:00)`;
 
     // Create and send embed, then react to it with quack
     const embed = new Discord.MessageEmbed()
@@ -278,3 +275,8 @@ function reminderMessages() {
  * @property {string} location Link or location of event
  * @property {boolean} pingAll Should we ping everyone or just here
  */
+
+function pad(str) {
+	if (str.length === 1) return '0' + str;
+	return str;
+}
