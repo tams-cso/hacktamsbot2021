@@ -254,9 +254,12 @@ async function eventPing(event) {
     var ping = `<@&${data.special.workshopRole}>`;
     if (event.pingAll) ping = '@everyone';
 
+    // Prevent auto-embed if it's a link
+    var locationString = event.location.startsWith('https:') ? `<${event.location}>` : event.location;
+
     await client.channels.cache
         .get(data.special.eventsChannel)
-        .send(`${ping} **${event.name}** starting in *10 minutes* at ${event.location}`);
+        .send(`${ping} **${event.name}** starting in *10 minutes* at ${locationString}`);
 
     console.log(`Sent ping for Event: ${event.name}`)
 }
