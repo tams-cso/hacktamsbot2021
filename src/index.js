@@ -11,8 +11,8 @@ const client = new Discord.Client({ ws: { intents: Discord.Intents.ALL } });
 const mentors = getMentors();
 
 // Counters for event and reminder lists
-var eventCount = 2; // hacky fix for production errors IRGHIUERWHGBIUREWHGURWEHG - MUST CHANGE AFTER RESTART DURING EVENT
-var reminderCount = 0;
+var eventCount = 9; // hacky fix for production errors IRGHIUERWHGBIUREWHGURWEHG - MUST CHANGE AFTER RESTART DURING EVENT
+var reminderCount = 1; // Shoot i messed this up too should also be 0
 var toPingList = [];
 
 var tokens = {}; // Object to hold auth tokens
@@ -271,7 +271,7 @@ async function eventPing(event) {
 function reminderMessages() {
     // Calculate reminder time
     const now = new Date();
-    const rawTime = data.reminders[0].time.split(':');
+    const rawTime = data.reminders[reminderCount].time.split(':');
     const milliDiff = Number(rawTime[0]) * 3600000 + Number(rawTime[1]) * 60000;
     const submissionTime = new Date('2020-11-08T21:00:00Z');
     const diff = submissionTime - milliDiff;
