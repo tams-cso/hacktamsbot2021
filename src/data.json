@@ -1,20 +1,18 @@
 {
     "prefix": "!",
     "roles": {
-        "team": "750894547462127686",
-        "hacker": "763118079918997504",
-        "mentor": "763118116779458590",
-        "notif": "774337590870540299"
+        "hacker": "900151825628536884",
+        "mentor": "900152033359843410"
     },
     "special": {
-        "eventsChannel": "774339202438660127",
-        "infoChannel": "750899860324089917",
-        "duckEmoji": "774040219599110154",
-        "workshopRole": "774337590870540299"
+        "eventsChannel": "900150597980942366",
+        "infoChannel": "900150401146445834",
+        "duckEmoji": "900150170954633256",
+        "workshopRole": "900151366952046593"
     },
     "joinMessage": "Welcome to hackTAMS! This server will be the main source of communication and information.\nFirst you must verify invitation. You should have received a DM from Hacker Duck. Follow his instructions to get verified. Remember to use the name and email you used to register for hackTAMS.\nNot registered? No worries, can register here: https://hacktams.org/register\n\nIf you have any issues or questions regarding verification, please DM <@611762884464082945>",
     "verifyMessage": "To verify your server invitation, please enter \nyour first and last name and email used to register for hackTAMS.\nEx: `Hacker Duck hackerduck@hacktams.org`",
-    "authText": "\nDM Hacker Duck with your verification code to gain access to the hackTAMS server.\n\nIf this was not you, please contact dylanli@hacktams.org",
+    "authText": "\nDM Hacker Duck with your verification code to gain access to the hackTAMS server.\n\nIf this was not you, please contact dylan@hacktams.org",
     "regNotFound": "Registration not found: Please verify you have entered the correct name and email in the following format\nFirstName LastName Email\nEx: `Hacker Duck hackerduck@hacktams.org`",
     "reminders": [
         {
